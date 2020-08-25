@@ -25,10 +25,6 @@ query
           json {
             nbformat
             nbformat_minor
-            cells {
-              cell_type
-              execution_count
-            }
           }
           internal {
             content

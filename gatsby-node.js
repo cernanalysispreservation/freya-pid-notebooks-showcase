@@ -7,21 +7,34 @@
 // You can delete this file if you're not using it
 
 const path = require(`path`)
+const fs = require(`fs`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
 
 exports.onCreateNode = ({ node, getNode, actions }) => {
 	const { createNodeField } = actions
 	if (node.internal.type === `JupyterNotebook`) {
-		// console.log(node.internal.type)
+		let dir_path = path.dirname(node.fileAbsolutePath)
+		let codemeta_file = dir_path+"/codemeta.json"
 
+		let codemeta_json = {};
+
+		if (fs.existsSync(codemeta_file)) {
+			//file exists
+			let codemeta_data = fs.readFileSync(codemeta_file);
+			codemeta_json = JSON.parse(codemeta_data);
+		}
 		const fileNode = getNode(node.parent)
-		console.log(createFilePath({ node, getNode, basePath: `pages` }))
-
 		const slug = createFilePath({ node, getNode, basePath: `pages` })
+		
 		createNodeField({
 			node,
 			name: `slug`,
 			value: slug,
+		})
+		createNodeField({
+			node,
+			name: `codemeta`,
+			value: codemeta_json,
 		})
 	}
 }
@@ -50,7 +63,6 @@ exports.createPages = async ({ graphql, actions }) => {
 
 		// slug = slug.split("/content/notebooks")[1];
 		// let notebook_name = slug.split("/")[2];
-
 		createPage({
 			path: node.fields.slug,
 			component: path.resolve(`./src/templates/notebook.js`),

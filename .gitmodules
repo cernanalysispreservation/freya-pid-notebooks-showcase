@@ -1,6 +1,3 @@
 [submodule "src/content/notebooks"]
 	path = src/content/notebooks
 	url = https://github.com/datacite/notebooks.git
-[submodule "src/content/pidgraph-notebooks-python"]
-	path = src/content/pidgraph-notebooks-python
-	url = https://github.com/datacite/pidgraph-notebooks-python.git
