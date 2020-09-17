@@ -12,8 +12,8 @@ const Footer = ({ siteTitle }) => (
             The PID Jupyter Notebooks showcase  is maintained by <a href="https://www.cern.ch">CERN</a> and was developed within the <a href="https://www.project-freya.eu">FREYA project</a> .
           </p>
           <p>
-            <img src="/freya_logo.png" width="100" alt="FREYA" />
-            <img src="/eosc_logo-trs.png" width="200" alt="FREYA" />
+            <img src={'/pid-graph-showcase/freya_logo.png'} width="100" alt="FREYA" />
+            <img src={'/pid-graph-showcase/eosc_logo-trs.png'} width="200" alt="FREYA" />
           </p>
         </Col>
         <Col sm={6}>
