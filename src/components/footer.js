@@ -3,7 +3,24 @@ import PropTypes from "prop-types"
 import React from "react"
 import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
 
-const Footer = ({ siteTitle }) => (
+import { useStaticQuery, graphql } from "gatsby"
+import Img from "gatsby-image"
+import FREYAImage from "./FREYAImage";
+
+const Footer = ({ siteTitle }) => {
+  const data2 = useStaticQuery(graphql`
+    query {
+      placeholderImage: file(relativePath: { eq: "eosc_logo-trs.png" }) {
+        childImageSharp {
+          fluid(maxWidth: 300) {
+            ...GatsbyImageSharpFluid
+          }
+        }
+      }
+    }
+  `)
+
+  return (
     <footer className="App-footer py-3">
     <Container>
       <Row>
@@ -11,10 +28,10 @@ const Footer = ({ siteTitle }) => (
           <p>
             The PID Jupyter Notebooks showcase  is maintained by <a href="https://www.cern.ch">CERN</a> and was developed within the <a href="https://www.project-freya.eu">FREYA project</a> .
           </p>
-          <p>
-            <img src={'/pid-graph-showcase/freya_logo.png'} width="100" alt="FREYA" />
-            <img src={'/pid-graph-showcase/eosc_logo-trs.png'} width="200" alt="FREYA" />
-          </p>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
+            <FREYAImage />
+            <Img fluid={data2.placeholderImage.childImageSharp.fluid} style={{width: "200px"}} width="100" alt="FREYA"/>
+          </div>
         </Col>
         <Col sm={6}>
           <p>The FREYA project has received funding from the <a href="https://ec.europa.eu/programmes/horizon2020/en">European Union’s Horizon 2020</a> research and innovation programme under grant agreement No 777523.</p>
@@ -22,7 +39,8 @@ const Footer = ({ siteTitle }) => (
       </Row>
     </Container>
     </footer>
-)
+  )
+}
 
 Footer.propTypes = {
   siteTitle: PropTypes.string,

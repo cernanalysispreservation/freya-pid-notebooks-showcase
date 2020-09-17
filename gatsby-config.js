@@ -1,10 +1,10 @@
 var path = require('path');
 
 module.exports = {
-  pathPrefix: "/pid-graph-showcase",
+  pathPrefix: "/freya-pid-notebooks-showcase",
   siteMetadata: {
     title: `Showcasing PID Graph notebooks`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
+    description: `The PID Jupyter Notebooks showcase is maintained by CERN and was developed within the FREYA project`,
     author: `@pamfilos`,
   },
   plugins: [
@@ -28,7 +28,7 @@ module.exports = {
         background_color: `#663399`,
         theme_color: `#663399`,
         display: `minimal-ui`,
-        icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
+        icon: `src/images/freya_logo.png`, // This path is relative to the root of the site.
       },
     },
     {
