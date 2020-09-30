@@ -11,7 +11,7 @@ import Home from "../components/home";
 const IndexPage = () => {
   return (
     <Layout>
-        <Home path="/" />
+        <Home />
     </Layout>
   )
 }
