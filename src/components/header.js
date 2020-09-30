@@ -7,9 +7,9 @@ const Header = ({ siteTitle }) => (
   <header className="App-header">
     <Navbar expand="lg">
       <Navbar.Toggle aria-controls="navbar-nav" />
-      <Link to="/">
+      <a href="/">
             <Navbar.Brand data-testid="navbar-brand"><span className="brand-highlight">PID</span> Notebook Showcase</Navbar.Brand>
-      </Link>
+      </a>
       <Navbar.Collapse id="navbar-nav">
         <Nav>
           <Link to="/about">
