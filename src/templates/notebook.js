@@ -16,7 +16,7 @@ const NotebookPage = ({ data }) => {
   return (
     <Layout>
       <Breadcrumb>
-        <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+        <Breadcrumb.Item><Link to="/">Home</Link></Breadcrumb.Item>
         <Breadcrumb.Item active>{codemeta.name || "Notebook Preview" }</Breadcrumb.Item>
       </Breadcrumb>
       <hr />
