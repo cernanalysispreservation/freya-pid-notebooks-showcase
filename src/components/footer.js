@@ -30,7 +30,6 @@ const Footer = ({ siteTitle }) => {
           </p>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
             <FREYAImage />
-            <Img fluid={data2.placeholderImage.childImageSharp.fluid} style={{width: "200px"}} width="100" alt="FREYA"/>
           </div>
         </Col>
         <Col sm={6}>
