@@ -1,7 +1,6 @@
 var path = require('path');
 
 module.exports = {
-  pathPrefix: "/freya-pid-notebooks-showcase",
   siteMetadata: {
     title: `Showcasing PID Graph notebooks`,
     description: `The PID Jupyter Notebooks showcase is maintained by CERN and was developed within the FREYA project`,
