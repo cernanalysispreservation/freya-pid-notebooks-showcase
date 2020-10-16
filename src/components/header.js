@@ -22,9 +22,9 @@ const Header = ({ siteTitle }) => (
       <Container>
         <Row>
           <Col>
-            <span style={{fontSize: "28px", marginBottom: "5px"}}>Welcome to the PID Jupyter Notebooks showcase.</span>
+            <span style={{fontSize: "30px", marginBottom: "10px"}}>Welcome to the PID Jupyter Notebooks showcase</span>
             <p>
-              The PID Jupyter Notebooks showcase presents a collection of Jupyter notebooks developed within the FREYA project. The website is maintained by CERN and the code repository behind it can be found <a href="https://github.com/cernanalysispreservation/freya-pid-notebooks-showcase">here</a>           </p>
+              The PID Jupyter Notebooks showcase presents a collection of Jupyter notebooks developed within the FREYA project. The website is maintained by CERN and the code repository behind it can be found <a href="https://github.com/cernanalysispreservation/freya-pid-notebooks-showcase">here.</a>           </p>
           </Col>
         </Row>
       </Container>

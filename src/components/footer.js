@@ -26,7 +26,7 @@ const Footer = ({ siteTitle }) => {
       <Row>
         <Col sm={6}>
           <p>
-            The PID Jupyter Notebooks showcase  is maintained by <a href="https://www.cern.ch">CERN</a> and was developed within the <a href="https://www.project-freya.eu">FREYA project</a> .
+            The PID Jupyter Notebooks showcase  is maintained by <a href="https://www.cern.ch">CERN</a> and was developed within the <a href="https://www.project-freya.eu">FREYA project</a>.
           </p>
           <div style={{ display: "flex", justifyContent: "start", alignItems: "center"}}>
             <FREYAImage />
@@ -50,4 +50,3 @@ Footer.defaultProps = {
 }
 
 export default Footer
-

@@ -10,7 +10,7 @@ const About = () => (
     <p>You can read more about the concept of the PID Graph <a href="https://www.project-freya.eu/en/pid-graph/the-pid-graph" rel="nofollow">here</a> and the implementation using GraphQL is described in more detail <a href="https://doi.org/10.5438/yfck-mv39" rel="nofollow">here</a>.</p>
     </div>
     <div>
-        The PID Jupyter Notebooks showcase is maintained by CERN and was developed within the FREYA project
+        The PID Jupyter Notebooks showcase is maintained by CERN and was developed under the project goals of the FREYA Project.
     </div>
   </Layout>
 )
