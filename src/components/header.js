@@ -8,7 +8,7 @@ const Header = ({ siteTitle }) => (
     <Navbar expand="lg">
       <Navbar.Toggle aria-controls="navbar-nav" />
       <Link to="/">
-            <Navbar.Brand data-testid="navbar-brand"><span className="brand-highlight">PID</span> Notebook Showcase</Navbar.Brand>
+            <Navbar.Brand data-testid="navbar-brand"><span style={{color: "#B8DEE2"}}>PID</span> Notebook Showcase</Navbar.Brand>
       </Link>
       <Navbar.Collapse id="navbar-nav">
         <Nav>
@@ -22,10 +22,9 @@ const Header = ({ siteTitle }) => (
       <Container>
         <Row>
           <Col>
-            <h1>Welcome to the PID Jupyter Notebooks showcase.</h1>
+            <span style={{fontSize: "28px", marginBottom: "5px"}}>Welcome to the PID Jupyter Notebooks showcase.</span>
             <p>
-            The PID Jupyter Notebooks showcase is maintained by CERN and was developed within the FREYA project. For more information about the registry contact <a href="mailto:support@pidnotebooks.org">support@pidnotebooks.org</a>
-            </p>
+              The PID Jupyter Notebooks showcase presents a collection of Jupyter notebooks developed within the FREYA project. The website is maintained by CERN and the code repository behind it can be found <a href="https://github.com/cernanalysispreservation/freya-pid-notebooks-showcase">here</a>           </p>
           </Col>
         </Row>
       </Container>
