@@ -11800,6 +11800,11 @@ react-transition-group@^4.4.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
+react-use-iframe-content-height@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-use-iframe-content-height/-/react-use-iframe-content-height-1.0.2.tgz#c78c5eece7b410e99acd1f79cecc6e1f951e64cc"
+  integrity sha512-wVT2U7zpsPSVmR+acOC2SMbrsAnv7EvWNfI4/vjOMABZClZd8cUCofn69pJgX+2uyfiBRAgptxM/jLNDXeNvBw==
+
 react@^16.12.0, react@^16.8.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
