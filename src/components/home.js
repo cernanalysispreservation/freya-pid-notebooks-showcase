@@ -9,17 +9,15 @@ import SearchListItem from "./SearchListItem";
 export default function IndexPage() {
   const data = useStaticQuery(graphql`
     query {
-      allJupyterNotebook {
+      allPidNotebook {
         edges {
           node {
             id
-            fields {
-              slug
-              codemeta {
-                name
-                description
-              }
+            codemeta {
+              name
+              description
             }
+            slug
           }
         }
         totalCount
@@ -30,7 +28,7 @@ export default function IndexPage() {
   return (
     <div>
       <SEO title="Home" />
-      {data.allJupyterNotebook.edges.map(({ node }) => {
+      {data.allPidNotebook.edges.map(({ node }) => {
         return (
           <div>
             <SearchListItem notebook={node} />

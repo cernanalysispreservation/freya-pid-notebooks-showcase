@@ -3,12 +3,12 @@ import { Card } from 'react-bootstrap';
 import { Link } from "gatsby"
 
 export const ServiceListingItem = ({ notebook: {
-    fields: {
+    
         slug, 
         codemeta: {
             name, description, doi
         } = {}
-    } = {}
+
 } = {} }) => {
 
 

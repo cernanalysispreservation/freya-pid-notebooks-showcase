@@ -9,7 +9,9 @@ import { Tabs, Tab, Badge, Breadcrumb } from 'react-bootstrap';
 import NotebookPreview from "@nteract/notebook-preview";
 
 const NotebookPage = ({ data }) => {
-  let { html, internal: { content = null } = {}, fields: { codemeta = null } = {} } = data.jupyterNotebook;
+  let { html, internal: { content = null } = {},  codemeta = null, name=""  } = data.pidNotebook;
+
+
 
   let doi_id = codemeta && codemeta.identifier ? codemeta.identifier.replace("https://doi.org/", "") : ""
   let doi_link = `https://doi.org/${doi_id}`;
@@ -21,12 +23,12 @@ const NotebookPage = ({ data }) => {
       </Breadcrumb>
       <hr />
       <h2>{codemeta.name}
-        {
+        {/* {
           codemeta.binderUrl &&
           <a target="_blank" href={codemeta.binderUrl} style={{ float: "right" }}>
             <img src="https://camo.githubusercontent.com/483bae47a175c24dfbfc57390edd8b6982ac5fb3/68747470733a2f2f6d7962696e6465722e6f72672f62616467655f6c6f676f2e737667" alt="Binder" data-canonical-src="https://mybinder.org/badge_logo.svg" style={{ maxWidth: "100%" }}></img>
           </a>
-        }
+        } */}
       </h2>
       {
         doi_link !== "https://doi.org/" &&
@@ -40,22 +42,22 @@ const NotebookPage = ({ data }) => {
 
       <h2 />
       <br /><hr />
-      <NotebookPreview notebook={JSON.parse(content)} />
+      <div>
+          <iframe src={name} width="1000" height="1000" title="aa"/>
+        </div>
     </Layout>
   )
 }
 
-export const query = graphql`
+
+
+
+export const query =  graphql`
   query($slug: String!) {
-    jupyterNotebook(fields: { slug: { eq: $slug } }) {
-        html
-        internal {
-          content
-        }
-        fields {
+    pidNotebook(slug: { eq: $slug } ) {
+        name
           codemeta {
             identifier
-            binderUrl
             codeRepository
             controlledTem
             datePublished
@@ -68,7 +70,6 @@ export const query = graphql`
             publisher
             name
             version
-          }
         }
     }
   }
