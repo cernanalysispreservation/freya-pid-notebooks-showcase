@@ -1,3 +1,0 @@
-[submodule "src/content/notebooks"]
-	path = src/content/notebooks
-	url = https://github.com/datacite/notebooks.git
