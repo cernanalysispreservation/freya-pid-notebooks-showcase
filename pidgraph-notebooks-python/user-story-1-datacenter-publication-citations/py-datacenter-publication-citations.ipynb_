@@ -1,0 +1,561 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "  [FREYA](https://www.project-freya.eu/en) WP2 [User Story 1](https://github.com/datacite/freya/issues/30) | As a data center, I want to see the citations of publications that use my repository for the underlying data, so that I can demonstrate the impact of our repository. \n",
+    " :------------- | :------------- | :-------------\n",
+    "\n",
+    "It is important for repositories of scientific data to monitor and report on the impact of the data they store. One useful proxy  of that impact are citations of publications accompanying the deposited data.<p />\n",
+    "This notebook uses the [DataCite GraphQL API](https://api.datacite.org/graphql) to retrieve data (a.k.a. works) and their citations from three different repositories: [PANGAEA](https://www.pangaea.de/), [DRYAD](https://datadryad.org/stash) and [Global Biodiversity Information Facility](https://www.gbif.org/data-repository), using *polarstern*, *butterfly* and *Lake Malawi* as example queries respectively.\n",
+    "\n",
+    "**Goal**: By the end of this notebook you should be able to: \n",
+    "- Retrieve works for a chosen repository and query, along with associated metrics such as <ins>citation, view and download</ins> counts;\n",
+    "- Visualise the work counts over time, e.g. <br> <img src=\"example_plot.png\" width=\"295\" height=\"161\" />\n",
+    "- Present the works in a tabular format and download them in a single BibTeX file;\n",
+    "- For a given work, retrieve all the citations, present them in a tabular format and then download them in a single BibTeX file."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Install libraries and prepare GraphQL client"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%%capture\n",
+    "# Install required Python packages\n",
+    "!pip install gql requests numpy pandas"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Prepare the GraphQL client\n",
+    "import requests\n",
+    "from IPython.display import display, Markdown\n",
+    "from gql import gql, Client\n",
+    "from gql.transport.requests import RequestsHTTPTransport\n",
+    "\n",
+    "_transport = RequestsHTTPTransport(\n",
+    "    url='https://api.datacite.org/graphql',\n",
+    "    use_json=True,\n",
+    ")\n",
+    "\n",
+    "client = Client(\n",
+    "    transport=_transport,\n",
+    "    fetch_schema_from_transport=True,\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Define and run the GraphQL query\n",
+    "Define the GraphQL to find all works from PANGAEA, DRYAD and Global Biodiversity Information Facility (GBIF) repositories using keywords: *polarstern*, *butterfly* and *Lake Malawi* respectively."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Generate the GraphQL query\n",
+    "query_params = {\n",
+    "    \"pangaea_repository\" : \"pangaea.repository\",\n",
+    "    \"pangaea_keyword\" : \"polarstern\",\n",
+    "    \"dryad_repository\" : \"dryad.dryad\",\n",
+    "    \"dryad_keyword\" : \"butterfly\",\n",
+    "    \"gbif_repository\" : \"gbif.gbif\",\n",
+    "    \"gbif_keyword\" : \"Lake Malawi\", \n",
+    "}\n",
+    "\n",
+    "query = gql(\"\"\"query getWorksByRepositoryAndKeyword(\n",
+    "    $pangaea_repository: ID!, $pangaea_keyword: String!,\n",
+    "    $dryad_repository: ID!, $dryad_keyword: String!\n",
+    "    $gbif_repository: ID!, $gbif_keyword: String!\n",
+    "    )\n",
+    "{\n",
+    "  pangaea: repository(id: $pangaea_repository) {\n",
+    "    id\n",
+    "    name\n",
+    "    citationCount\n",
+    "    works(query: $pangaea_keyword) {\n",
+    "      totalCount\n",
+    "      published {\n",
+    "        title\n",
+    "        count\n",
+    "      }\n",
+    "      nodes {\n",
+    "        id\n",
+    "        type\n",
+    "        publicationYear\n",
+    "        bibtex\n",
+    "        titles {\n",
+    "          title\n",
+    "        }\n",
+    "        citationCount\n",
+    "        viewCount\n",
+    "        downloadCount\n",
+    "      }\n",
+    "    }\n",
+    "  },\n",
+    "  dryad: repository(id: $dryad_repository) {\n",
+    "    id\n",
+    "    name\n",
+    "    citationCount\n",
+    "    works(query: $dryad_keyword) {\n",
+    "      totalCount\n",
+    "      published {\n",
+    "        title\n",
+    "        count\n",
+    "      }\n",
+    "      nodes {\n",
+    "        id\n",
+    "        type\n",
+    "        publicationYear\n",
+    "        bibtex\n",
+    "        titles {\n",
+    "          title\n",
+    "        }\n",
+    "        citationCount\n",
+    "        viewCount\n",
+    "        downloadCount\n",
+    "      }\n",
+    "    }\n",
+    "  },\n",
+    "  gbif: repository(id: $gbif_repository) {\n",
+    "    id\n",
+    "    name\n",
+    "    citationCount\n",
+    "    works(query: $gbif_keyword) {\n",
+    "      totalCount\n",
+    "      published {\n",
+    "        title\n",
+    "        count\n",
+    "      }\n",
+    "      nodes {\n",
+    "        id\n",
+    "        type\n",
+    "        publicationYear\n",
+    "        bibtex\n",
+    "        titles {\n",
+    "          title\n",
+    "        }\n",
+    "        citationCount\n",
+    "        viewCount\n",
+    "        downloadCount\n",
+    "      }\n",
+    "    }\n",
+    "  }\n",
+    "}\n",
+    "\"\"\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Run the above query via the GraphQL client"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import json\n",
+    "data = client.execute(query, variable_values=json.dumps(query_params))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Display the number of works\n",
+    "For each repository, display the total number of works matching the respective query."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Get the total number of datasets matching the query\n",
+    "works = {}\n",
+    "for repo in ['pangaea', 'dryad', 'gbif']:\n",
+    "    works[repo] = data[repo]['works']\n",
+    "    print(\"The number of works for query '%s' in repository %s:\\n%s\" % (query_params['%s_keyword' % repo], data[repo]['name'], str(works[repo]['totalCount'])))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Display the number of citations of the works\n",
+    "For each repository, display the total number of citations of works matching the respective query."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Get the total number of citations per repository\n",
+    "for repo in ['pangaea', 'dryad', 'gbif']:\n",
+    "    print(\"The total number of citations for repository %s:\\n%s\" % (data[repo]['name'], str(data[repo]['citationCount'])))\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Plot the number of works per year\n",
+    "For each repository, display a bar plot showing the counts of works matching the respective query, across years."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Plot the total number of datasets to date, by year\n",
+    "import matplotlib.pyplot as plt\n",
+    "from matplotlib.ticker import FormatStrFormatter\n",
+    "import numpy as np\n",
+    "\n",
+    "for repo in ['pangaea', 'dryad','gbif']:\n",
+    "    works = data[repo]['works']\n",
+    "    name = data[repo]['name']\n",
+    "    plt.rcdefaults()\n",
+    "    sorted_years = sorted([int(s['title']) for s in works['published']])\n",
+    "    num_outputs4sorted_years = [s['count'] for s in works['published']]\n",
+    "    # Get a list of all consecutive years between min and max year (inclusive)\n",
+    "    all_years = list(range(sorted_years[0], sorted_years[-1]))\n",
+    "    # Populate output counts (into num_counts) for all consecutive years\n",
+    "    num_outputs = []\n",
+    "    for year in all_years:\n",
+    "        if year in sorted_years:\n",
+    "            idx = sorted_years.index(year)\n",
+    "            num_outputs.append(num_outputs4sorted_years[idx])\n",
+    "        else:\n",
+    "            num_outputs.append(0)     \n",
+    "\n",
+    "    fig, ax = plt.subplots(1, 1, figsize = (10, 5))\n",
+    "    x_pos = np.arange(len(all_years))\n",
+    "    ax.bar(x_pos, num_outputs, align='center', color='blue', edgecolor='black', linewidth=1, alpha=0.5)\n",
+    "    ax.set_xticks(x_pos)\n",
+    "    ax.set_xticklabels(all_years, rotation='vertical')\n",
+    "    ax.set_ylabel('Number of works per Year')\n",
+    "    ax.set_xlabel('Year')\n",
+    "    ax.set_title(\"Number of works retrieved via query '%s' from %s\" % (query_params[\"%s_keyword\" % repo], name))\n",
+    "    plt.show()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Display works in tabular format\n",
+    "For each repository and query, display the works in a html table, including the number of their citations, views and downloads."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from IPython.core.display import display, HTML\n",
+    "\n",
+    "# Get details for each output\n",
+    "for repo in ['pangaea', 'dryad','gbif']:\n",
+    "    works = data[repo]['works']\n",
+    "    name = data[repo]['name']\n",
+    "    outputs = [['ID','Type','Publication Year','Titles','Number of Citations', 'Number of Views', 'Number of Downloads']]\n",
+    "    for r in works['nodes']:\n",
+    "        id = '<a href=\"%s\">%s</a></html>' % (r['id'], '/'.join(r['id'].split(\"/\")[3:]))\n",
+    "        titles = '; '.join([s['title'] for s in r['titles']])\n",
+    "        output = [id, r['type'], str(r['publicationYear']), titles, str(r['citationCount']), str(r['viewCount']), str(r['downloadCount'])]\n",
+    "        outputs += [output]\n",
+    "    \n",
+    "    # Display outputs as html table \n",
+    "    html_table = '<html><table><caption><b>\"%s\" works from %s</b></caption>' % (query_params[\"%s_keyword\" % repo], name)  \n",
+    "    html_table += '<tr><th style=\"text-align:center;\">' + '</th><th style=\"text-align:center;\">'.join(outputs[0]) + '</th></tr>'\n",
+    "    for row in outputs[1:]:\n",
+    "        html_table += '<tr><td style=\"text-align:left;\">' + '</td><td style=\"text-align:left;\">'.join(row) + '</td></tr>'\n",
+    "    html_table += '</table></html>'\n",
+    "    display(HTML(html_table))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Download works in BibTeX format\n",
+    "Download the works in a single BibTeX file per repository"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "from IPython.display import Javascript\n",
+    "from requests.utils import requote_uri\n",
+    "\n",
+    "# For each repository, download a file of BibTeX entries in csv format\n",
+    "for repo in ['pangaea', 'dryad','gbif']:\n",
+    "    works = data[repo]['works']\n",
+    "    bibtex_data = []\n",
+    "    for r in works['nodes']:\n",
+    "        bibtex_data.append([r['bibtex']])\n",
+    "    df = pd.DataFrame(bibtex_data, columns = None)\n",
+    "    \n",
+    "    js_download = \"\"\"\n",
+    "var csv = '%s';\n",
+    "\n",
+    "var filename = '%s_%s.bib';\n",
+    "var blob = new Blob([csv], { type: 'application/x-bibtex;charset=utf-8;' });\n",
+    "if (navigator.msSaveBlob) { // IE 10+\n",
+    "    navigator.msSaveBlob(blob, filename);\n",
+    "} else {\n",
+    "    var link = document.createElement(\"a\");\n",
+    "    if (link.download !== undefined) { // feature detection\n",
+    "        // Browsers that support HTML5 download attribute\n",
+    "        var url = URL.createObjectURL(blob);\n",
+    "        link.setAttribute(\"href\", url);\n",
+    "        link.setAttribute(\"download\", filename);\n",
+    "        link.style.visibility = 'hidden';\n",
+    "        document.body.appendChild(link);\n",
+    "        link.click();\n",
+    "        document.body.removeChild(link);\n",
+    "    }\n",
+    "}\n",
+    "\"\"\" % (df.to_csv(index=False, header=False).replace('\\n','\\\\n').replace(\"\\'\",\"\\\\'\").replace(\"\\\"\",\"\").replace(\"\\r\",\"\"), query_params[\"%s_repository\" % repo], requote_uri(query_params[\"%s_keyword\" % repo]))\n",
+    "    \n",
+    "    display(Javascript(js_download))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Define and run GraphQL query to retrieve citations for a single work\n",
+    "The query will retrieve citations for [IUCN Red List assessment occurrence data for freshwater species native to the Lake Malawi/Nyasa/Niassa Catchment](https://doi.org/10.15468/1z5fn8)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Generate the GraphQL query: Get citations for a specific work from the repository\n",
+    "citations_query_params = {\n",
+    "    \"id\" : \"https://doi.org/10.15468/1z5fn8\",\n",
+    "    \"maxCitations\" : 75\n",
+    "}\n",
+    "\n",
+    "citation_query = gql(\"\"\"query getCitationsByWorkId($id: ID!, $maxCitations: Int!)\n",
+    "{\n",
+    "  work(id: $id) {\n",
+    "    id\n",
+    "    titles {\n",
+    "      title\n",
+    "    }\n",
+    "    type\n",
+    "    publicationYear\n",
+    "    citations(first: $maxCitations) {\n",
+    "      totalCount\n",
+    "      nodes {\n",
+    "        id\n",
+    "        type\n",
+    "        publicationYear\n",
+    "        repository {\n",
+    "          id\n",
+    "          name\n",
+    "        }\n",
+    "        titles {\n",
+    "          title\n",
+    "        }\n",
+    "        bibtex\n",
+    "        citationCount\n",
+    "        viewCount\n",
+    "        downloadCount\n",
+    "      }\n",
+    "    }\n",
+    "  }\n",
+    "}\n",
+    "\"\"\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Run the above query"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import json\n",
+    "citations = client.execute(citation_query, variable_values=json.dumps(citations_query_params))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Display the number of citations \n",
+    "Display the number of citations of [IUCN Red List assessment occurrence data for freshwater species native to the Lake Malawi/Nyasa/Niassa Catchment](https://doi.org/10.15468/1z5fn8)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Get the total number of citations matching the query\n",
+    "citations_data = citations['work']['citations']\n",
+    "print(\"The number of citations for work %s:\\n%s\" % (citations_query_params[\"id\"], str(citations_data['totalCount'])))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Display citations in tabular format\n",
+    "Display citations of [IUCN Red List assessment occurrence data for freshwater species native to the Lake Malawi/Nyasa/Niassa Catchment](https://doi.org/10.15468/1z5fn8) in a html table, including the number of their respective citations, views and downloads."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from IPython.core.display import display, HTML\n",
+    "\n",
+    "# Get details for each citation\n",
+    "outputs = [['ID','Type','Publication Year','Titles','Number of Citations', 'Number of Views', 'Number of Downloads']]\n",
+    "for r in citations_data['nodes']:\n",
+    "    citation_id = '<a href=\"%s\">%s</a></html>' % (r['id'], '/'.join(r['id'].split(\"/\")[3:]))\n",
+    "    titles = '; '.join([s['title'] for s in r['titles']])\n",
+    "    output = [citation_id, r['type'], str(r['publicationYear']), titles, str(r['citationCount']), str(r['viewCount']), str(r['downloadCount'])]\n",
+    "    outputs += [output]\n",
+    "    \n",
+    "# Display outputs as html table\n",
+    "id_href = '<a href=\"%s\">%s</a></html>' % (citations_query_params['id'], '/'.join(citations_query_params['id'].split(\"/\")[3:]))\n",
+    "html_table = '<html><table><caption><b>Citations of %s from %s</b></caption>' % (id_href, query_params[\"%s_repository\" % \"gbif\"] )  \n",
+    "html_table += '<tr><th style=\"text-align:center;\">' + '</th><th style=\"text-align:center;\">'.join(outputs[0]) + '</th></tr>'\n",
+    "for row in outputs[1:]:\n",
+    "    html_table += '<tr><td style=\"text-align:left;\">' + '</td><td style=\"text-align:left;\">'.join(row) + '</td></tr>'\n",
+    "html_table += '</table></html>'\n",
+    "display(HTML(html_table))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Download citations in BibTeX format\n",
+    "Download the citations of [IUCN Red List assessment occurrence data for freshwater species native to the Lake Malawi/Nyasa/Niassa Catchment](https://doi.org/10.15468/1z5fn8) in a single BibTeX file."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "from IPython.display import Javascript\n",
+    "from requests.utils import requote_uri\n",
+    "\n",
+    "# Download a file of BibTeX entries in csv format, for the citations of citations_query_params['id']\n",
+    "for r in works['nodes']:\n",
+    "    bibtex_data = []\n",
+    "    for r in works['nodes']:\n",
+    "        bibtex_data.append([r['bibtex']])\n",
+    "    df = pd.DataFrame(bibtex_data, columns = None)\n",
+    "id_label = '/'.join(citations_query_params['id'].split(\"/\")[3:])\n",
+    "\n",
+    "js_download = \"\"\"\n",
+    "var csv = '%s';\n",
+    "var filename = '%s.bib';\n",
+    "var blob = new Blob([csv], { type: 'application/x-bibtex;charset=utf-8;' });\n",
+    "if (navigator.msSaveBlob) { // IE 10+\n",
+    "    navigator.msSaveBlob(blob, filename);\n",
+    "} else {\n",
+    "    var link = document.createElement(\"a\");\n",
+    "    if (link.download !== undefined) { // feature detection\n",
+    "        // Browsers that support HTML5 download attribute\n",
+    "        var url = URL.createObjectURL(blob);\n",
+    "        link.setAttribute(\"href\", url);\n",
+    "        link.setAttribute(\"download\", filename);\n",
+    "        link.style.visibility = 'hidden';\n",
+    "        document.body.appendChild(link);\n",
+    "        link.click();\n",
+    "        document.body.removeChild(link);\n",
+    "    }\n",
+    "}\n",
+    "\"\"\" % (df.to_csv(index=False, header=False).replace('\\n','\\\\n').replace(\"\\'\",\"\\\\'\").replace(\"\\\"\",\"\").replace(\"\\r\",\"\"), requote_uri(id_label))\n",
+    "    \n",
+    "display(Javascript(js_download))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.1"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
