@@ -14298,7 +14298,7 @@ This notebook uses the <a href="https://api.datacite.org/graphql">DataCite Graph
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="n">capture</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
 <span class="c1"># Install required Python packages</span>
 <span class="err">!</span><span class="n">pip</span> <span class="n">install</span> <span class="n">gql</span> <span class="n">requests</span> <span class="n">sklearn</span> <span class="n">wordcloud</span> <span class="n">numpy</span> <span class="n">pandas</span>
 </pre></div>
@@ -14748,6 +14748,7 @@ The total number of dissertations for query &#39;ebola&#39;:
     <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">pie</span><span class="p">(</span><span class="n">num_outputs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">repositories</span><span class="p">,</span> <span class="n">autopct</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%1.0f%%</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        
 </pre></div>
 
      </div>
